@@ -307,16 +307,14 @@ Click the extension icon, connect your GitHub account, and select your destinati
 ### 📸 Screenshots & Showcase
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e4185fd2-a79d-4b62-9b6b-11def0677a2d" alt="Screenshots Showcase" width="100%" />
+  <img src="assets/image.png" alt="PushHub Extension Preview" width="380">
 </p>
 
 ### 🔒 Privacy & Security
 
-No Passwords Stored: PushHub utilizes official GitHub OAuth workflows; your raw GitHub password is never requested or stored.
-
-Environment Isolation: The OAuth client secret remains securely on the backend server and is never committed to version control.
-
-Minimal Scopes: Requests only the permissions necessary to manage files in your authorized repository.
+> No Passwords Stored: PushHub utilizes official GitHub OAuth workflows; your raw GitHub password is never requested or stored.
+> Environment Isolation: The OAuth client secret remains securely on the backend server and is never committed to version control.
+> Minimal Scopes: Requests only the permissions necessary to manage files in your authorized repository.
 
 🔮 Future Roadmap
 
