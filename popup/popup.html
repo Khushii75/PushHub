@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PushHub</title>
+
+    <link
+        rel="stylesheet"
+        href="popup.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="container">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+            <div class="brand-row">
+
+
+                <!-- PushHub logo -->
+
+                <img
+                    src="../assets/pushhub-logo.png"
+                    alt="PushHub"
+                    class="pushhub-logo"
+                >
+
+
+                <!-- PushHub branding -->
+
+                <div class="brand-content">
+
+                    <h1 class="brand-name">
+
+                        <span class="push-text">
+                            Push
+                        </span><span class="hub-text">
+                            Hub
+                        </span>
+
+                    </h1>
+
+
+                    <p class="subtitle">
+                        Push your DSA journey to GitHub
+                    </p>
+
+                </div>
+
+
+                <!-- Settings -->
+
+                <button
+                    id="settings-button"
+                    class="settings-button"
+                    type="button"
+                    aria-label="Settings"
+                    title="Settings"
+                >
+                    ⚙
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 GITHUB CONNECTION
+            ================================================== -->
+
+            <div class="connection">
+
+
+                <!-- Actual GitHub icon -->
+
+                <div class="github-icon">
+
+                    <img
+                        src="../assets/github.png"
+                        alt="GitHub"
+                    >
+
+                </div>
+
+
+                <!-- GitHub account -->
+
+                <div class="connection-info">
+
+                    <div
+                        id="repository-display"
+                        class="repository-display"
+                    >
+                        Khushii75 / DSA
+                    </div>
+
+
+                    <div
+                        id="github-status"
+                        class="status connected"
+                    >
+
+                        <span class="status-dot"></span>
+
+                        <span class="status-text">
+                            Connected
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             SETTINGS PANEL
+        ================================================== -->
+
+        <section
+            id="settings-panel"
+            class="settings-panel hidden"
+        >
+
+            <div class="settings-header">
+
+                <h2>
+                    GitHub Settings
+                </h2>
+
+
+                <button
+                    id="close-settings"
+                    class="close-settings"
+                    type="button"
+                    aria-label="Close settings"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="setting-group">
+
+                <div class="section-title">
+                    GitHub
+                </div>
+
+
+                <button
+                    id="connect-github"
+                    class="connect-button"
+                    type="button"
+                >
+                    Connect GitHub
+                </button>
+
+            </div>
+
+
+            <div class="setting-group">
+
+                <div class="section-title">
+                    Repository
+                </div>
+
+
+                <select
+                    id="repository"
+                    class="repository-select"
+                >
+
+                    <option value="">
+                        Connect GitHub first
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PROBLEMS SOLVED
+        ================================================== -->
+
+        <section class="stats-card">
+
+
+            <!-- Heading -->
+
+            <div class="stats-heading">
+
+                <div class="stats-title">
+
+                    <span class="stats-icon">
+                        📖
+                    </span>
+
+
+                    <h2>
+                        Problems Solved
+                    </h2>
+
+                </div>
+
+
+                <div class="motivation">
+                    Keep going! 🚀
+                </div>
+
+            </div>
+
+
+            <!-- Total -->
+
+            <div
+                id="total-solved"
+                class="total-solved"
+            >
+                0
+            </div>
+
+
+            <div class="divider"></div>
+
+
+
+            <!-- =================================================
+                 LEETCODE
+                 Icon + text label (matches reference)
+            ================================================== -->
+
+            <div class="platform-row">
+
+                <div class="platform-info">
+
+                    <div class="platform-icon-box">
+                        <img
+                            src="../assets/leetcode.png"
+                            alt="LeetCode"
+                            class="platform-logo leetcode-logo"
+                        >
+                    </div>
+
+                    <span class="platform-name leetcode-name">
+                        LeetCode
+                    </span>
+
+                </div>
+
+
+                <span
+                    id="leetcode-count"
+                    class="platform-count leetcode-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 GEEKSFORGEEKS
+                 Icon + text label (matches reference)
+            ================================================== -->
+
+            <div class="platform-row">
+
+                <div class="platform-info">
+
+                    <div class="platform-icon-box">
+                        <img
+                            src="../assets/gfg.png"
+                            alt="GeeksforGeeks"
+                            class="platform-logo gfg-logo"
+                        >
+                    </div>
+
+                    <span class="platform-name gfg-name">
+                        GeeksforGeeks
+                    </span>
+
+                </div>
+
+
+                <span
+                    id="gfg-count"
+                    class="platform-count gfg-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 HACKERRANK
+                 Icon + text label (matches reference)
+            ================================================== -->
+
+            <div class="platform-row">
+
+                <div class="platform-info">
+
+                    <span class="platform-name hackerrank-name">
+                        HackerRank
+                    </span>
+
+                    <div class="platform-icon-box">
+                        <img
+                            src="../assets/hackerrank.png"
+                            alt="HackerRank"
+                            class="platform-logo hackerrank-logo"
+                        >
+                    </div>
+
+                </div>
+
+
+                <span
+                    id="hackerrank-count"
+                    class="platform-count hackerrank-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CODECHEF
+                 Logo image already IS the full wordmark —
+                 no separate text label needed.
+            ================================================== -->
+
+            <div class="platform-row">
+
+                <div class="platform-info">
+
+                    <div class="platform-icon-box codechef-logo-box">
+                        <img
+                            src="../assets/codechef.png"
+                            alt="CodeChef"
+                            class="platform-logo codechef-logo"
+                        >
+                    </div>
+
+                </div>
+
+
+                <span
+                    id="codechef-count"
+                    class="platform-count codechef-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CODEFORCES
+                 Logo image already IS the full wordmark —
+                 no separate text label needed.
+            ================================================== -->
+
+            <div class="platform-row">
+
+                <div class="platform-info">
+
+                    <div class="platform-icon-box codeforces-logo-box">
+                        <img
+                            src="../assets/codeforces.png"
+                            alt="Codeforces"
+                            class="platform-logo codeforces-logo"
+                        >
+                    </div>
+
+                </div>
+
+
+                <span
+                    id="codeforces-count"
+                    class="platform-count codeforces-count"
+                >
+                    0
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CURRENT STREAK
+        ================================================== -->
+
+        <section class="streak-card">
+
+
+            <div class="streak-heading">
+
+                <div class="streak-title">
+
+                    <span class="fire-icon">
+                        🔥
+                    </span>
+
+
+                    <h2>
+                        Current Streak
+                    </h2>
+
+                </div>
+
+
+                <div class="streak-motivation">
+                    Consistency wins! 👑
+                </div>
+
+            </div>
+
+
+            <div
+                id="current-streak"
+                class="current-streak"
+            >
+                0 days
+            </div>
+
+
+            <div class="best-streak">
+
+                Best Streak:
+
+                <span id="best-streak">
+                    0 days
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             REFRESH STATS
+        ================================================== -->
+
+        <button
+            id="refresh-stats"
+            class="refresh-button"
+            type="button"
+        >
+
+            <span class="refresh-icon">
+                ↻
+            </span>
+
+
+            <span>
+                Refresh Stats
+            </span>
+
+        </button>
+
+
+
+        <!-- =================================================
+             SOCIAL LINKS
+        ================================================== -->
+
+        <nav class="social-links">
+
+
+            <!-- GitHub -->
+
+            <a
+                href="https://github.com/Khushii75"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-link github-link"
+            >
+
+                <img
+                    src="../assets/github.png"
+                    alt="GitHub"
+                    class="social-logo github-social-logo"
+                >
+
+
+                <span>
+                    GitHub
+                </span>
+
+            </a>
+
+
+            <span class="social-divider"></span>
+
+
+
+            <!-- LinkedIn -->
+
+            <a
+                href="https://www.linkedin.com/in/khushi-kumari-7718672a5"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-link linkedin-link"
+            >
+
+                <span class="linkedin-icon">
+                    in
+                </span>
+
+
+                <span>
+                    LinkedIn
+                </span>
+
+            </a>
+
+
+            <span class="social-divider"></span>
+
+
+
+            <!-- Email -->
+
+            <a
+                href="mailto:kunwarkhushi75@gmail.com"
+                class="social-link email-link"
+            >
+
+                <span class="email-icon">
+                    ✉
+                </span>
+
+
+                <span>
+                    Email
+                </span>
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- =================================================
+             FEEDBACK FOOTER
+        ================================================== -->
+
+        <footer class="feedback-footer">
+
+
+            <div class="feedback-icon">
+                ➤
+            </div>
+
+
+            <div class="feedback-content">
+
+                <div class="feedback-title">
+                    Want more features?
+                </div>
+
+
+                <div class="feedback-text">
+
+                    Let us know at
+
+                    <a
+                        href="mailto:kunwarkhushi75@gmail.com"
+                    >
+                        kunwarkhushi75@gmail.com
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="mailto:kunwarkhushi75@gmail.com"
+                class="feedback-arrow"
+                aria-label="Send feedback"
+            >
+                ›
+            </a>
+
+        </footer>
+
+
+    </main>
+
+
+    <script src="popup.js"></script>
+
+</body>
+
+</html>

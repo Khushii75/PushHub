@@ -1,0 +1,1062 @@
+/* =========================================================
+   PUSHHUB POPUP
+   White + colorful platform branding
+========================================================= */
+
+:root {
+    --black: #111111;
+    --text: #161616;
+    --muted: #64748b;
+    --border: #e5e7eb;
+
+    --green: #16a34a;
+    --green-dark: #15803d;
+
+    --leetcode: #f59e0b;
+    --gfg: #0f9d58;
+    --hackerrank: #111111;
+    --codechef: #7c421c;
+    --codeforces: #2563eb;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 380px;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    background: #ffffff;
+    color: var(--text);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.container {
+    width: 100%;
+
+    padding: 18px 20px 18px;
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    margin-bottom: 16px;
+}
+
+
+.brand-row {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    position: relative;
+}
+
+
+/* PushHub main logo */
+
+.pushhub-logo {
+    width: 56px;
+    height: 56px;
+
+    object-fit: contain;
+
+    flex-shrink: 0;
+}
+
+
+/* PushHub text */
+
+.brand-content {
+    min-width: 0;
+    flex: 1;
+}
+
+
+.brand-name {
+    margin: 0;
+    padding: 0;
+
+    font-size: 28px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+}
+
+
+.push-text {
+    color: #16a34a;
+}
+
+
+.hub-text {
+    color: #111111;
+}
+
+
+.subtitle {
+    margin: 5px 0 0;
+
+    font-size: 12px;
+    line-height: 1.3;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-button {
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+
+    background: #f8fafc;
+    color: #111111;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.settings-button:hover {
+    background: #f1f5f9;
+
+    transform: rotate(10deg);
+}
+
+
+/* =========================================================
+   GITHUB CONNECTION
+========================================================= */
+
+.connection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    margin-top: 12px;
+}
+
+
+/* Actual GitHub logo */
+
+.github-icon {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: transparent;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+}
+
+
+.github-icon img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+/* Account information */
+
+.connection-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.repository-display {
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #111111;
+}
+
+
+.status {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #16a34a;
+}
+
+
+.status.connected {
+    color: #16a34a;
+}
+
+
+.status.disconnected {
+    color: #dc2626;
+}
+
+
+.status.disconnected .status-dot {
+    background: #dc2626;
+}
+
+
+/* =========================================================
+   SETTINGS PANEL
+========================================================= */
+
+.settings-panel {
+    margin-bottom: 14px;
+
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: #f8fafc;
+}
+
+
+.settings-panel.hidden {
+    display: none;
+}
+
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+}
+
+
+.settings-header h2 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+
+.close-settings {
+    width: 28px;
+    height: 28px;
+
+    padding: 0;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+
+    background: #ffffff;
+    color: #111111;
+
+    font-size: 18px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+.setting-group {
+    margin-bottom: 12px;
+}
+
+
+.setting-group:last-child {
+    margin-bottom: 0;
+}
+
+
+.section-title {
+    margin-bottom: 7px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    color: #64748b;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+
+.connect-button {
+    width: 100%;
+
+    padding: 9px 12px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #111111;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.connect-button:hover {
+    background: #262626;
+}
+
+
+.connect-button:disabled {
+    opacity: 0.65;
+
+    cursor: default;
+}
+
+
+.repository-select {
+    width: 100%;
+
+    padding: 9px 10px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #111111;
+
+    outline: none;
+}
+
+
+/* =========================================================
+   PROBLEMS CARD
+========================================================= */
+
+.stats-card {
+    padding: 16px 16px 14px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 4px 14px rgba(15, 23, 42, 0.07);
+}
+
+
+/* Heading */
+
+.stats-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.stats-title {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.stats-icon {
+    font-size: 22px;
+
+    line-height: 1;
+}
+
+
+.stats-title h2 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 750;
+
+    color: #111111;
+}
+
+
+.motivation {
+    font-size: 11px;
+    font-weight: 600;
+
+    color: #475569;
+}
+
+
+/* Total */
+
+.total-solved {
+    margin: 8px 0 10px;
+
+    text-align: center;
+
+    font-size: 48px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    color: #111111;
+}
+
+
+/* Divider */
+
+.divider {
+    height: 1px;
+
+    margin: 5px 0 8px;
+
+    background: #e5e7eb;
+}
+
+
+/* =========================================================
+   PLATFORM ROWS
+========================================================= */
+
+.platform-row {
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 4px 0;
+}
+
+
+.platform-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    overflow: hidden;
+}
+
+
+/* Fixed-size box every icon sits in — prevents random cropping
+   regardless of the source image's own dimensions. */
+
+.platform-icon-box {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+
+.platform-logo {
+    display: block;
+
+    max-width: 100%;
+    max-height: 100%;
+
+    object-fit: contain;
+
+    border: none;
+}
+
+
+/* Icon-only platforms (LeetCode / GFG / HackerRank) get a
+   separate text label next to the icon, matching the reference. */
+
+.platform-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.leetcode-name {
+    color: var(--leetcode);
+}
+
+
+.gfg-name {
+    color: var(--gfg);
+}
+
+
+.hackerrank-name {
+    color: var(--hackerrank);
+    font-weight: 800;
+}
+
+/* =========================================================
+   HACKERRANK — SMALL GREEN RECTANGLE
+========================================================= */
+
+.hackerrank-logo {
+    display: none !important;
+}
+
+.platform-icon-box:has(.hackerrank-logo) {
+    width: 14px !important;
+    min-width: 14px !important;
+
+    height: 18px !important;
+    min-height: 18px !important;
+
+    padding: 0 !important;
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+
+    background: #00b760 !important;
+
+    border-radius: 1px !important;
+
+    display: block !important;
+
+    flex-shrink: 0 !important;
+}
+
+.platform-icon-box:has(.hackerrank-logo)::after {
+    display: none !important;
+}
+/* CodeChef / Codeforces logos are full wordmarks already —
+   give them a wider box, no separate name label needed. */
+
+.codechef-logo,
+.codeforces-logo {
+    max-height: 22px;
+}
+
+.codechef-logo-box,
+.codeforces-logo-box {
+    width: auto;
+    height: 26px;
+    justify-content: flex-start;
+}
+
+/* CodeChef's wordmark reads small next to the others at the
+   same box height — size it up to match their visual weight. */
+
+.codechef-logo-box {
+    height: 34px;
+}
+
+.codechef-logo {
+    max-height: 34px;
+}
+
+
+/* =========================================================
+   PLATFORM COUNTS
+========================================================= */
+
+.platform-count {
+    min-width: 24px;
+
+    text-align: right;
+
+    font-size: 17px;
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+
+.leetcode-count {
+    color: var(--leetcode);
+}
+
+
+.gfg-count {
+    color: var(--gfg);
+}
+
+
+.hackerrank-count {
+    color: #111111;
+}
+
+
+.codechef-count {
+    color: var(--codechef);
+}
+
+
+.codeforces-count {
+    color: var(--codeforces);
+}
+
+
+/* =========================================================
+   STREAK CARD
+========================================================= */
+
+.streak-card {
+    margin-top: 14px;
+
+    padding: 15px 16px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 4px 14px rgba(15, 23, 42, 0.07);
+}
+
+
+.streak-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.streak-title {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.fire-icon {
+    font-size: 26px;
+
+    line-height: 1;
+}
+
+
+.streak-title h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 750;
+
+    color: #111111;
+}
+
+
+.streak-motivation {
+    font-size: 11px;
+    font-weight: 600;
+
+    color: #475569;
+}
+
+
+.current-streak {
+    margin-top: 6px;
+
+    text-align: center;
+
+    font-size: 34px;
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    color: #15803d;
+}
+
+
+.best-streak {
+    margin-top: 6px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: #64748b;
+}
+
+
+.best-streak span {
+    color: #f59e0b;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   REFRESH BUTTON
+========================================================= */
+
+.refresh-button {
+    width: 100%;
+    height: 45px;
+
+    margin-top: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border: none;
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            100deg,
+            #0ea5e9,
+            #2563eb,
+            #7c3aed
+        );
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 14px rgba(37, 99, 235, 0.20);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.refresh-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 7px 17px rgba(37, 99, 235, 0.27);
+}
+
+
+.refresh-button:active {
+    transform: translateY(0);
+}
+
+
+.refresh-button:disabled {
+    opacity: 0.65;
+
+    cursor: wait;
+}
+
+
+.refresh-icon {
+    font-size: 22px;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   SOCIAL LINKS
+========================================================= */
+
+.social-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 14px;
+
+    padding: 0 2px 12px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.social-link {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: #111111;
+
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.social-link:hover {
+    opacity: 0.65;
+}
+
+
+/* GitHub social logo */
+
+.social-logo {
+    display: block;
+
+    width: 20px;
+    height: 20px;
+
+    object-fit: contain;
+}
+
+
+.github-social-logo {
+    border-radius: 50%;
+}
+
+
+/* LinkedIn */
+
+.linkedin-icon {
+    width: 20px;
+    height: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 4px;
+
+    background: #0a66c2;
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* Email */
+
+.email-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+
+    color: #111111;
+
+    font-size: 18px;
+}
+
+
+/* Dividers */
+
+.social-divider {
+    width: 1px;
+    height: 18px;
+
+    background: #d1d5db;
+}
+
+
+/* =========================================================
+   FEEDBACK FOOTER
+========================================================= */
+
+.feedback-footer {
+    min-height: 56px;
+
+    margin-top: 12px;
+
+    padding: 10px 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    border-radius: 12px;
+
+    background: #f1f3f5;
+
+    color: #111111;
+}
+
+
+/* Paper plane */
+
+.feedback-icon {
+    width: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    font-size: 20px;
+
+    color: #111111;
+
+    transform: rotate(-45deg);
+}
+
+
+/* Feedback text */
+
+.feedback-content {
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.feedback-title {
+    margin-bottom: 2px;
+
+    font-size: 11px;
+
+    color: #374151;
+}
+
+
+.feedback-text {
+    font-size: 11px;
+
+    line-height: 1.35;
+
+    color: #4b5563;
+}
+
+
+.feedback-text a {
+    color: #111111;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.feedback-text a:hover {
+    text-decoration: underline;
+}
+
+
+/* Arrow */
+
+.feedback-arrow {
+    color: #4b5563;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   SMALL POPUP SAFETY
+========================================================= */
+
+@media (max-width: 350px) {
+
+    body {
+        width: 350px;
+    }
+
+
+    .container {
+        padding: 13px;
+    }
+
+
+    .pushhub-logo {
+        width: 46px;
+        height: 46px;
+    }
+
+
+    .brand-name {
+        font-size: 23px;
+    }
+
+
+    .motivation,
+    .streak-motivation {
+        display: none;
+    }
+
+}

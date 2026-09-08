@@ -1,0 +1,143 @@
+{
+    "manifest_version": 3,
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmV0Sma9jdZze4XMISfGBxIhxEbwF7vGC5mzPsgwo0Ag7qnEYtu08DbedbIYwhyRPknh+gyryAOOXgJS+maNuZLFcZHuYvan6OTZ0bFdOcdJfdCjZjFxTpGD3ei4beaqLF32d6S9HT8G7qwZibuou8tlwG8J1ovlsdUj1eit20Wje6Avq72wYOx3vW/kJTWmc3Sb6DXiPDFJYMsDmsiBa0cIhv0THDWAZIYSnnYJDC18daQUrGlB/a1xDwtoBESy9efW+yXRcUX4Pb2dsAGig2P3wFTyZZxjSFUDCOII4il/+zWhSvsVsrtVboghFCelQ+51uGhMFNhB3A4jopzTkPwIDAQAB",
+    "name": "PushHub",
+    "version": "1.0.0",
+    "description": "Sync accepted competitive programming solutions to GitHub.",
+
+    "permissions": [
+        "storage",
+        "identity"
+    ],
+
+    "host_permissions": [
+        "https://leetcode.com/*",
+        "https://www.geeksforgeeks.org/*",
+        "https://www.hackerrank.com/*",
+        "https://codechef.com/*",
+        "https://www.codechef.com/*",
+        "https://www.codeforces.com/*",
+        "https://api.github.com/*",
+        "http://localhost:3000/*"
+    ],
+
+    "background": {
+        "service_worker": "background.js"
+    },
+
+    "action": {
+        "default_title": "PushHub",
+        "default_icon": {
+            "16": "assets/pushhub-logo.png",
+            "32": "assets/pushhub-logo.png",
+            "48": "assets/pushhub-logo.png",
+            "128": "assets/pushhub-logo.png"
+        },
+        "default_popup": "popup/popup.html"
+    },
+
+    "icons": {
+        "16": "assets/pushhub-logo.png",
+        "32": "assets/pushhub-logo.png",
+        "48": "assets/pushhub-logo.png",
+        "128": "assets/pushhub-logo.png"
+    },
+
+    "content_scripts": [
+        {
+            "matches": [
+                "https://leetcode.com/*"
+            ],
+            "js": [
+                "platforms/leetcode.js"
+            ],
+            "run_at": "document_idle"
+        },
+
+        {
+            "matches": [
+                "https://www.geeksforgeeks.org/problems/*"
+            ],
+            "js": [
+                "platforms/gfg-bridge.js"
+            ],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
+
+        {
+            "matches": [
+                "https://www.geeksforgeeks.org/problems/*"
+            ],
+            "js": [
+                "platforms/gfg.js"
+            ],
+            "run_at": "document_idle"
+        },
+
+        {
+            "matches": [
+                "https://www.hackerrank.com/*"
+            ],
+            "js": [
+                "platforms/hackerrank-bridge.js"
+            ],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
+
+        {
+            "matches": [
+                "https://www.hackerrank.com/*"
+            ],
+            "js": [
+                "platforms/hackerrank.js"
+            ],
+            "run_at": "document_idle"
+        },
+
+        {
+            "matches": [
+                "https://codechef.com/*",
+                "https://www.codechef.com/*"
+            ],
+            "js": [
+                "platforms/codechef-bridge.js"
+            ],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
+
+        {
+            "matches": [
+                "https://codechef.com/*",
+                "https://www.codechef.com/*"
+            ],
+            "js": [
+                "platforms/codechef.js"
+            ],
+            "run_at": "document_idle"
+        },
+
+        {
+            "matches": [
+                "https://codeforces.com/*"
+            ],
+            "js": [
+                "platforms/codeforces-bridge.js"
+            ],
+            "run_at": "document_start",
+            "world": "MAIN"
+        },
+
+        {
+            "matches": [
+                "https://codeforces.com/*"
+            ],
+            "js": [
+                "platforms/codeforces.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ]
+}
