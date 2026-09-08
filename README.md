@@ -71,7 +71,8 @@ Repeat hundreds of times...
 
 The goal is simple: Spend more time mastering algorithms, and zero time managing files.
 
-🌐 Supported Platforms
+
+### 🌐 Supported Platforms
 
 | Platform | Accepted Detection | Automated GitHub Sync |
 | :--- | :---: | :---: |
@@ -81,7 +82,8 @@ The goal is simple: Spend more time mastering algorithms, and zero time managing
 | 🟤 **CodeChef** | ✅ | ✅ |
 | 🌈 **Codeforces** | ✅ | ✅ |
 
-⚡ Core Features
+### ⚡ Core Features
+
 🔄 One-Click GitHub Synchronization
 After submitting and receiving an accepted verdict, PushHub triggers a seamless sync action to push the clean solution directly into your designated repository.
 
@@ -90,28 +92,22 @@ Accepted Submission ──► "Sync to GitHub" ──► GitHub Repository
 🤖 Automatic Solution Extraction
 PushHub intercepts and extracts metadata accurately from the page DOM and network events:
 
-Problem title and problem ID
-
-Target programming language
-
-Final submitted source code
-
-Source platform tag
-
-Direct problem URL
-
-Topic tags and categories
+> Problem title and problem ID
+> Target programming language
+> Final submitted source code
+> Source platform tag
+> Direct problem URL
+> Topic tags and categories
 
 🗂️ Automatic Topic-Based Organization
+
 Instead of dumping every single file into the root folder, PushHub arranges problems into dedicated DSA topic categories.
 
 🧠 Topic Classification Categories
+
 Whenever platform tags are available, PushHub maps the problem into one of the following curated DSA categories:
-
 Data Structures: Array, String, Linked List, Stack, Queue, Tree, Binary Tree, Binary Search Tree, Heap, Matrix
-
 Algorithms & Techniques: Dynamic Programming, Greedy, Recursion, Backtracking, Hashing, Sorting, Searching, Bit Manipulation, Mathematics, Sliding Window, Two Pointer, Prefix Sum
-
 Fallback: Other/ (ensures zero misplaced solutions when category tags are ambiguous)
 
 📄 Standardized Problem Layout
@@ -127,11 +123,8 @@ PushHub includes an integrated overview dashboard built right into the extension
 
 Metrics Tracked:
 Total Problems Solved
-
 Platform Breakdown: LeetCode, GeeksforGeeks, HackerRank, CodeChef, Codeforces
-
 Current Solving Streak: Consecutive days actively solving problems
-
 Best Solving Streak: Longest recorded active solving streak
 
 ## 📊 PushHub Dashboard
@@ -312,6 +305,9 @@ Pin PushHub to your browser toolbar.
 Click the extension icon, connect your GitHub account, and select your destination DSA repository.
 
 📸 Screenshots & Showcase
+
+<img width="1003" height="1204" alt="image" src="https://github.com/user-attachments/assets/e4185fd2-a79d-4b62-9b6b-11def0677a2d" />
+
 
 
 🔒 Privacy & Security
