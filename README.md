@@ -304,13 +304,13 @@ Select the root PushHub folder.
 Pin PushHub to your browser toolbar.
 Click the extension icon, connect your GitHub account, and select your destination DSA repository.
 
-📸 Screenshots & Showcase
+### 📸 Screenshots & Showcase
 
-<img width="1003" height="1204" alt="image" src="https://github.com/user-attachments/assets/e4185fd2-a79d-4b62-9b6b-11def0677a2d" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e4185fd2-a79d-4b62-9b6b-11def0677a2d" alt="Screenshots Showcase" width="100%" />
+</p>
 
-
-
-🔒 Privacy & Security
+### 🔒 Privacy & Security
 
 No Passwords Stored: PushHub utilizes official GitHub OAuth workflows; your raw GitHub password is never requested or stored.
 
