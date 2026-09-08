@@ -16,7 +16,7 @@ const GITHUB_REDIRECT_URI =
     "https://bhhpegeenjalkhlajmhekhngmcgjgaki.chromiumapp.org/";
 
 const BACKEND_URL =
-    "http://localhost:3000";
+    "https://pushhub-ol22.onrender.com";
 
 const README_START_MARKER =
     "<!-- DSA-GRINDHUB:START -->";
