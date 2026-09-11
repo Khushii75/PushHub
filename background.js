@@ -170,6 +170,7 @@ async function connectGitHub() {
         });
 
     if (!redirectUrl) {
+
         throw new Error(
             "GitHub authentication was cancelled."
         );
@@ -276,6 +277,9 @@ async function connectGitHub() {
         githubRefreshTokenExpiresIn:
             tokenData.refreshTokenExpiresIn,
 
+        githubTokenCreatedAt:
+            Date.now(),
+
         githubTokenScope:
             tokenData.scope
     });
@@ -293,31 +297,13 @@ async function connectGitHub() {
 
 async function getGitHubRepositories() {
 
-    const result =
-        await chrome.storage.local.get([
-            "githubAccessToken",
-            "githubUsername"
-        ]);
-
-    if (!result.githubAccessToken) {
-        throw new Error(
-            "GitHub access token is missing. Connect GitHub first."
-        );
-    }
+    await getValidGitHubAccessToken();
 
     const response =
-        await fetch(
+        await githubFetchWithTimeout(
             "https://api.github.com/user/repos?per_page=100&sort=updated",
             {
-                method: "GET",
-                headers: {
-                    "Authorization":
-                        `Bearer ${result.githubAccessToken}`,
-                    "Accept":
-                        "application/vnd.github+json",
-                    "X-GitHub-Api-Version":
-                        "2022-11-28"
-                }
+                method: "GET"
             }
         );
 
@@ -406,6 +392,432 @@ async function fetchWithTimeout(
     } finally {
 
         clearTimeout(timeoutId);
+    }
+}
+
+
+/* =========================================
+   GITHUB TOKEN MANAGER
+========================================= */
+
+let githubRefreshPromise = null;
+
+
+async function clearGitHubSession() {
+
+    await chrome.storage.local.set({
+        githubAuthenticated: false
+    });
+
+    /*
+     * IMPORTANT:
+     * Repository selection is preserved.
+     */
+    await chrome.storage.local.remove([
+        "githubAccessToken",
+        "githubToken",
+        "githubRefreshToken",
+        "githubTokenExpiresIn",
+        "githubRefreshTokenExpiresIn",
+        "githubTokenCreatedAt",
+        "githubTokenScope"
+    ]);
+}
+
+
+async function refreshGitHubAccessToken() {
+
+    if (githubRefreshPromise) {
+        return githubRefreshPromise;
+    }
+
+    githubRefreshPromise = (async () => {
+
+        const stored =
+            await chrome.storage.local.get([
+                "githubRefreshToken"
+            ]);
+
+        if (!stored.githubRefreshToken) {
+
+            await clearGitHubSession();
+
+            throw new Error(
+                "GitHub session expired. Please reconnect GitHub."
+            );
+        }
+
+        const response =
+            await fetchWithTimeout(
+                `${BACKEND_URL}/auth/github/refresh`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        refreshToken:
+                            stored.githubRefreshToken
+                    })
+                }
+            );
+
+        const data =
+            await response.json().catch(
+                () => ({})
+            );
+
+        if (
+            !response.ok ||
+            !data.success ||
+            !data.accessToken
+        ) {
+
+            await clearGitHubSession();
+
+            throw new Error(
+                data.message ||
+                "GitHub session expired. Please reconnect GitHub."
+            );
+        }
+
+        const refreshToken =
+            data.refreshToken ||
+            stored.githubRefreshToken;
+
+        await chrome.storage.local.set({
+
+            githubAuthenticated:
+                true,
+
+            githubAccessToken:
+                data.accessToken,
+
+            githubToken:
+                data.accessToken,
+
+            githubRefreshToken:
+                refreshToken,
+
+            githubTokenExpiresIn:
+                data.expiresIn || null,
+
+            githubRefreshTokenExpiresIn:
+                data.refreshTokenExpiresIn || null,
+
+            githubTokenCreatedAt:
+                Date.now(),
+
+            githubTokenScope:
+                data.scope || null
+        });
+
+        return data.accessToken;
+
+    })().finally(() => {
+
+        githubRefreshPromise = null;
+
+    });
+
+    return githubRefreshPromise;
+}
+
+
+async function getValidGitHubAccessToken() {
+
+    const stored =
+        await chrome.storage.local.get([
+            "githubAccessToken",
+            "githubRefreshToken",
+            "githubTokenExpiresIn",
+            "githubTokenCreatedAt"
+        ]);
+
+    if (
+        !stored.githubAccessToken &&
+        !stored.githubRefreshToken
+    ) {
+
+        throw new Error(
+            "GitHub is not connected. Please connect GitHub first."
+        );
+    }
+
+    /*
+     * Refresh five minutes before expiry.
+     */
+    if (
+        stored.githubRefreshToken &&
+        stored.githubTokenExpiresIn &&
+        stored.githubTokenCreatedAt
+    ) {
+
+        const expiresAt =
+            Number(stored.githubTokenCreatedAt) +
+            Number(stored.githubTokenExpiresIn) * 1000;
+
+        if (
+            Date.now() >=
+            expiresAt - (5 * 60 * 1000)
+        ) {
+
+            return refreshGitHubAccessToken();
+        }
+    }
+
+    /*
+     * Refresh if access token is missing.
+     */
+    if (!stored.githubAccessToken) {
+
+        return refreshGitHubAccessToken();
+    }
+
+    return stored.githubAccessToken;
+}
+
+
+/*
+ * All GitHub API requests go through this wrapper.
+ */
+async function githubFetchWithTimeout(
+    url,
+    options = {},
+    timeout = 20000,
+    retryOn401 = true
+) {
+
+    const accessToken =
+        await getValidGitHubAccessToken();
+
+    const headers =
+        new Headers(
+            options.headers || {}
+        );
+
+    headers.set(
+        "Authorization",
+        `Bearer ${accessToken}`
+    );
+
+    headers.set(
+        "Accept",
+        "application/vnd.github+json"
+    );
+
+    headers.set(
+        "X-GitHub-Api-Version",
+        "2022-11-28"
+    );
+
+    let response =
+        await fetchWithTimeout(
+            url,
+            {
+                ...options,
+                headers
+            },
+            timeout
+        );
+
+    /*
+     * Unexpected 401:
+     * refresh and retry exactly once.
+     */
+    if (
+        response.status === 401 &&
+        retryOn401
+    ) {
+
+        await refreshGitHubAccessToken();
+
+        const retryToken =
+            await getValidGitHubAccessToken();
+
+        const retryHeaders =
+            new Headers(
+                options.headers || {}
+            );
+
+        retryHeaders.set(
+            "Authorization",
+            `Bearer ${retryToken}`
+        );
+
+        retryHeaders.set(
+            "Accept",
+            "application/vnd.github+json"
+        );
+
+        retryHeaders.set(
+            "X-GitHub-Api-Version",
+            "2022-11-28"
+        );
+
+        response =
+            await fetchWithTimeout(
+                url,
+                {
+                    ...options,
+                    headers:
+                        retryHeaders
+                },
+                timeout
+            );
+    }
+
+    return response;
+}
+
+
+/* =========================================
+   REPOSITORY STATE
+========================================= */
+
+async function ensureGitHubRepositorySelected() {
+
+    const stored =
+        await chrome.storage.local.get([
+            "githubRepository",
+            "githubRepositoryId",
+            "githubRepositoryBranch"
+        ]);
+
+    /*
+     * Already selected.
+     */
+    if (stored.githubRepository) {
+
+        return stored;
+    }
+
+    const result =
+        await getGitHubRepositories();
+
+    const repositories =
+        result.repositories || [];
+
+    if (repositories.length === 0) {
+
+        throw new Error(
+            "No GitHub repositories found for this account."
+        );
+    }
+
+    /*
+     * If there is exactly one repository,
+     * automatically select it.
+     */
+    if (repositories.length === 1) {
+
+        const repository =
+            repositories[0];
+
+        const state = {
+
+            githubRepository:
+                repository.fullName,
+
+            githubRepositoryId:
+                repository.id,
+
+            githubRepositoryBranch:
+                repository.defaultBranch ||
+                "main"
+        };
+
+        await chrome.storage.local.set(
+            state
+        );
+
+        return {
+            ...stored,
+            ...state
+        };
+    }
+
+    throw new Error(
+        "Please select a GitHub repository in PushHub before syncing."
+    );
+}
+
+
+/* =========================================
+   GITHUB STATUS
+========================================= */
+
+async function checkGitHubStatus() {
+
+    try {
+
+        await getValidGitHubAccessToken();
+
+        const response =
+            await githubFetchWithTimeout(
+                "https://api.github.com/user",
+                {
+                    method: "GET"
+                }
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `GitHub authentication check failed (${response.status}).`
+            );
+        }
+
+        const user =
+            await response.json();
+
+        await chrome.storage.local.set({
+
+            githubAuthenticated:
+                true,
+
+            githubUsername:
+                user.login
+        });
+
+        return {
+
+            success:
+                true,
+
+            authenticated:
+                true,
+
+            username:
+                user.login
+        };
+
+    } catch (error) {
+
+        if (
+            /session expired|not connected|authentication check failed/i
+                .test(
+                    String(error?.message || "")
+                )
+        ) {
+
+            await clearGitHubSession();
+        }
+
+        return {
+
+            success:
+                false,
+
+            authenticated:
+                false,
+
+            message:
+                error.message
+        };
     }
 }
 
@@ -1971,7 +2383,7 @@ async function updateRootReadme(
     };
 
     const readResponse =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             `${apiUrl}?ref=${encodeURIComponent(
                 storage.githubRepositoryBranch
             )}`,
@@ -2104,7 +2516,7 @@ async function updateRootReadme(
     }
 
     const writeResponse =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             apiUrl,
             {
 
@@ -2199,7 +2611,7 @@ async function syncProblemReadme(
     };
 
     const existingResponse =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             `${apiUrl}?ref=${encodeURIComponent(
                 storage.githubRepositoryBranch
             )}`,
@@ -2276,7 +2688,7 @@ async function syncProblemReadme(
     }
 
     const response =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             apiUrl,
             {
 
@@ -2372,15 +2784,34 @@ async function syncLeetCodeSubmission(
         );
     }
 
-    const storage =
+
+    /*
+     * Always validate/refresh the token first.
+     */
+    await getValidGitHubAccessToken();
+
+
+    /*
+     * Make sure repository selection really exists.
+     */
+    const repositoryState =
+        await ensureGitHubRepositorySelected();
+
+
+    const tokenState =
         await chrome.storage.local.get([
-
-            "githubAccessToken",
-
-            "githubRepository",
-
-            "githubRepositoryBranch"
+            "githubAccessToken"
         ]);
+
+
+    const storage = {
+
+        ...repositoryState,
+
+        githubAccessToken:
+            tokenState.githubAccessToken
+    };
+
 
     if (!storage.githubAccessToken) {
 
@@ -2389,12 +2820,14 @@ async function syncLeetCodeSubmission(
         );
     }
 
+
     if (!storage.githubRepository) {
 
         throw new Error(
             "No GitHub repository is selected."
         );
     }
+
 
     const repositoryParts =
         storage.githubRepository.split("/");
@@ -2469,7 +2902,7 @@ async function syncLeetCodeSubmission(
         `${owner}/${repo}/contents/${filePath}`;
 
     const existingResponse =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             `${apiUrl}?ref=${encodeURIComponent(branch)}`,
             {
 
@@ -2477,9 +2910,6 @@ async function syncLeetCodeSubmission(
                     "GET",
 
                 headers: {
-
-                    "Authorization":
-                        `Bearer ${storage.githubAccessToken}`,
 
                     "Accept":
                         "application/vnd.github+json",
@@ -2534,7 +2964,7 @@ async function syncLeetCodeSubmission(
     }
 
     const writeResponse =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             apiUrl,
             {
 
@@ -2542,9 +2972,6 @@ async function syncLeetCodeSubmission(
                     "PUT",
 
                 headers: {
-
-                    "Authorization":
-                        `Bearer ${storage.githubAccessToken}`,
 
                     "Accept":
                         "application/vnd.github+json",
@@ -2694,8 +3121,6 @@ async function syncLeetCodeSubmission(
             rootReadmeResult
     };
 }
-
-
 /* =========================================================
    PUSHHUB STATISTICS
 ========================================================= */
@@ -2732,27 +3157,13 @@ async function getPushHubRootReadme(
         `?ref=${encodeURIComponent(branch)}&_=${Date.now()}`;
 
     const response =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             apiUrl,
             {
-
-                method:
-                    "GET",
+                method: "GET",
 
                 cache:
-                    "no-store",
-
-                headers: {
-
-                    "Authorization":
-                        `Bearer ${storage.githubAccessToken}`,
-
-                    "Accept":
-                        "application/vnd.github+json",
-
-                    "X-GitHub-Api-Version":
-                        "2022-11-28"
-                }
+                    "no-store"
             }
         );
 
@@ -2949,24 +3360,10 @@ async function getPushHubReadmeCommitDates(
         `&per_page=100`;
 
     const response =
-        await fetchWithTimeout(
+        await githubFetchWithTimeout(
             apiUrl,
             {
-
-                method:
-                    "GET",
-
-                headers: {
-
-                    "Authorization":
-                        `Bearer ${storage.githubAccessToken}`,
-
-                    "Accept":
-                        "application/vnd.github+json",
-
-                    "X-GitHub-Api-Version":
-                        "2022-11-28"
-                }
+                method: "GET"
             }
         );
 
@@ -3151,12 +3548,6 @@ function calculatePushHubStreak(
             86400000
         );
 
-
-    /*
-     * Today or yesterday:
-     * streak remains active.
-     */
-
     if (
         daysSinceLatest > 1
     ) {
@@ -3170,10 +3561,8 @@ function calculatePushHubStreak(
         };
     }
 
-
     let currentStreak =
         1;
-
 
     for (
         let i =
@@ -3205,7 +3594,6 @@ function calculatePushHubStreak(
         }
     }
 
-
     return {
 
         currentStreak,
@@ -3221,15 +3609,33 @@ function calculatePushHubStreak(
 
 async function getPushHubStats() {
 
-    const storage =
+    /*
+     * Validate/refresh GitHub first.
+     */
+    await getValidGitHubAccessToken();
+
+
+    /*
+     * Make sure repository state exists.
+     */
+    const repositoryState =
+        await ensureGitHubRepositorySelected();
+
+
+    const tokenState =
         await chrome.storage.local.get([
-
-            "githubAccessToken",
-
-            "githubRepository",
-
-            "githubRepositoryBranch"
+            "githubAccessToken"
         ]);
+
+
+    const storage = {
+
+        ...repositoryState,
+
+        githubAccessToken:
+            tokenState.githubAccessToken
+    };
+
 
     if (!storage.githubAccessToken) {
 
@@ -3238,12 +3644,14 @@ async function getPushHubStats() {
         );
     }
 
+
     if (!storage.githubRepository) {
 
         throw new Error(
             "No GitHub repository is selected."
         );
     }
+
 
     console.log(
         "PushHub: Reading statistics from GitHub..."
@@ -3388,6 +3796,50 @@ chrome.runtime.onMessage.addListener(
 
 
         /* -----------------------------------
+           CHECK GITHUB STATUS
+        ----------------------------------- */
+
+        if (
+            message.type ===
+            "CHECK_GITHUB_STATUS"
+        ) {
+
+            checkGitHubStatus()
+
+                .then(
+                    result =>
+                        sendResponse(
+                            result
+                        )
+                )
+
+                .catch(
+                    error => {
+
+                        console.error(
+                            "PushHub: GitHub status check error:",
+                            error
+                        );
+
+                        sendResponse({
+
+                            success:
+                                false,
+
+                            authenticated:
+                                false,
+
+                            message:
+                                error.message
+                        });
+                    }
+                );
+
+            return true;
+        }
+
+
+        /* -----------------------------------
            GET REPOSITORIES
         ----------------------------------- */
 
@@ -3514,11 +3966,15 @@ chrome.runtime.onMessage.addListener(
                         if (result?.success) {
 
                             chrome.runtime.sendMessage({
+
                                 type:
                                     "PUSHHUB_STATS_UPDATED"
+
                             }).catch(
                                 () => {
-                                    // Popup may be closed.
+                                    /*
+                                     * Popup may be closed.
+                                     */
                                 }
                             );
                         }
@@ -3553,3 +4009,7 @@ chrome.runtime.onMessage.addListener(
 /* =========================================
    END
 ========================================= */
+
+console.log(
+    "PushHub: Background service worker initialized."
+);

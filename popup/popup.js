@@ -91,18 +91,31 @@ document.addEventListener(
         };
 
 
+        // ==================================================
+        // HELPERS
+        // ==================================================
+
         function resetStatsDisplay() {
 
-            totalSolved.textContent =
-                "0";
+            if (totalSolved) {
+
+                totalSolved.textContent =
+                    "0";
+            }
 
 
-            currentStreak.textContent =
-                "0 days";
+            if (currentStreak) {
+
+                currentStreak.textContent =
+                    "0 days";
+            }
 
 
-            bestStreak.textContent =
-                "0 days";
+            if (bestStreak) {
+
+                bestStreak.textContent =
+                    "0 days";
+            }
 
 
             Object.values(
@@ -120,153 +133,128 @@ document.addEventListener(
         }
 
 
-        settingsButton.addEventListener(
-            "click",
-            () => {
+        function setConnectedUI(
+            username
+        ) {
 
-                settingsPanel.classList.toggle(
-                    "hidden"
-                );
-            }
-        );
+            if (statusElement) {
 
-
-        closeSettings.addEventListener(
-            "click",
-            () => {
-
-                settingsPanel.classList.add(
-                    "hidden"
-                );
-            }
-        );
-
-
-        async function loadRepositories() {
-
-            if (!repositorySelect) {
-                return;
-            }
-
-
-            repositorySelect.innerHTML = `
-                <option value="">
-                    Loading repositories...
-                </option>
-            `;
-
-
-            try {
-
-                const response =
-                    await chrome.runtime.sendMessage({
-
-                        type:
-                            "GET_REPOSITORIES"
-                    });
-
-
-                if (
-                    !response ||
-                    !response.success
-                ) {
-
-                    throw new Error(
-                        response?.message ||
-                        "Could not load repositories."
-                    );
-                }
-
-
-                const repositories =
-                    response.repositories || [];
-
-
-                repositorySelect.innerHTML =
-                    "";
-
-
-                if (
-                    repositories.length === 0
-                ) {
-
-                    repositorySelect.innerHTML = `
-                        <option value="">
-                            No repositories found
-                        </option>
-                    `;
-
-                    return;
-                }
-
-
-                repositories.forEach(
-                    repo => {
-
-                        const option =
-                            document.createElement(
-                                "option"
-                            );
-
-
-                        option.value =
-                            repo.fullName;
-
-
-                        option.textContent =
-                            repo.private
-                                ? `${repo.name} 🔒`
-                                : repo.name;
-
-
-                        option.dataset.repositoryId =
-                            repo.id;
-
-
-                        option.dataset.defaultBranch =
-                            repo.defaultBranch;
-
-
-                        repositorySelect.appendChild(
-                            option
-                        );
-                    }
-                );
-
-
-                const saved =
-                    await chrome.storage.local.get([
-                        "githubRepository"
-                    ]);
-
-
-                if (
-                    saved.githubRepository
-                ) {
-
-                    repositorySelect.value =
-                        saved.githubRepository;
-                }
-
-
-                updateRepositoryDisplay();
-
-            } catch (error) {
-
-                console.error(
-                    "PushHub: Repository loading error:",
-                    error
-                );
-
-
-                repositorySelect.innerHTML = `
-                    <option value="">
-                        Failed to load repositories
-                    </option>
+                statusElement.innerHTML = `
+                    <span class="status-dot"></span>
+                    <span class="status-text">
+                        Connected
+                    </span>
                 `;
+
+
+                statusElement.classList.remove(
+                    "disconnected"
+                );
+
+
+                statusElement.classList.add(
+                    "connected"
+                );
+            }
+
+
+            if (connectButton) {
+
+                connectButton.textContent =
+                    "GitHub Connected";
+
+                connectButton.disabled =
+                    true;
             }
         }
 
+
+        function setDisconnectedUI() {
+
+            if (statusElement) {
+
+                statusElement.innerHTML = `
+                    <span class="status-dot"></span>
+                    <span class="status-text">
+                        Not connected
+                    </span>
+                `;
+
+
+                statusElement.classList.remove(
+                    "connected"
+                );
+
+
+                statusElement.classList.add(
+                    "disconnected"
+                );
+            }
+
+
+            if (connectButton) {
+
+                connectButton.textContent =
+                    "Connect GitHub";
+
+                connectButton.disabled =
+                    false;
+            }
+
+
+            if (repositorySelect) {
+
+                repositorySelect.innerHTML = `
+                    <option value="">
+                        Connect GitHub first
+                    </option>
+                `;
+            }
+
+
+            if (repositoryDisplay) {
+
+                repositoryDisplay.textContent =
+                    "GitHub / DSA";
+            }
+        }
+
+
+        // ==================================================
+        // SETTINGS
+        // ==================================================
+
+        if (settingsButton) {
+
+            settingsButton.addEventListener(
+                "click",
+                () => {
+
+                    settingsPanel.classList.toggle(
+                        "hidden"
+                    );
+                }
+            );
+        }
+
+
+        if (closeSettings) {
+
+            closeSettings.addEventListener(
+                "click",
+                () => {
+
+                    settingsPanel.classList.add(
+                        "hidden"
+                    );
+                }
+            );
+        }
+
+
+        // ==================================================
+        // UPDATE REPOSITORY DISPLAY
+        // ==================================================
 
         async function updateRepositoryDisplay() {
 
@@ -337,96 +325,430 @@ document.addEventListener(
         }
 
 
+        // ==================================================
+        // SAVE REPOSITORY
+        // ==================================================
+
+        async function saveRepository(
+            selectedOption
+        ) {
+
+            if (
+                !selectedOption ||
+                !selectedOption.value
+            ) {
+
+                return false;
+            }
+
+
+            const repository =
+                selectedOption.value;
+
+
+            const repositoryId =
+                selectedOption.dataset.repositoryId ||
+                "";
+
+
+            const defaultBranch =
+                selectedOption.dataset.defaultBranch ||
+                "main";
+
+
+            await chrome.storage.local.set({
+
+                githubRepository:
+                    repository,
+
+                githubRepositoryId:
+                    repositoryId,
+
+                githubRepositoryBranch:
+                    defaultBranch
+            });
+
+
+            console.log(
+                "PushHub: Repository saved:",
+                {
+                    repository,
+                    repositoryId,
+                    defaultBranch
+                }
+            );
+
+
+            return true;
+        }
+
+
+        // ==================================================
+        // LOAD REPOSITORIES
+        // ==================================================
+
+        async function loadRepositories() {
+
+            if (!repositorySelect) {
+                return;
+            }
+
+
+            repositorySelect.innerHTML = `
+                <option value="">
+                    Loading repositories...
+                </option>
+            `;
+
+
+            try {
+
+                const response =
+                    await chrome.runtime.sendMessage({
+
+                        type:
+                            "GET_REPOSITORIES"
+                    });
+
+
+                if (
+                    !response ||
+                    !response.success
+                ) {
+
+                    throw new Error(
+                        response?.message ||
+                        "Could not load repositories."
+                    );
+                }
+
+
+                const repositories =
+                    response.repositories || [];
+
+
+                repositorySelect.innerHTML =
+                    "";
+
+
+                // ------------------------------------------
+                // NO REPOSITORIES
+                // ------------------------------------------
+
+                if (
+                    repositories.length === 0
+                ) {
+
+                    repositorySelect.innerHTML = `
+                        <option value="">
+                            No repositories found
+                        </option>
+                    `;
+
+                    return;
+                }
+
+
+                // ------------------------------------------
+                // PLACEHOLDER
+                // ------------------------------------------
+
+                const placeholder =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                placeholder.value =
+                    "";
+
+
+                placeholder.textContent =
+                    "Select a repository";
+
+
+                placeholder.disabled =
+                    true;
+
+
+                repositorySelect.appendChild(
+                    placeholder
+                );
+
+
+                // ------------------------------------------
+                // ADD REPOSITORIES
+                // ------------------------------------------
+
+                repositories.forEach(
+                    repo => {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        option.value =
+                            repo.fullName;
+
+
+                        option.textContent =
+                            repo.private
+                                ? `${repo.name} 🔒`
+                                : repo.name;
+
+
+                        option.dataset.repositoryId =
+                            String(
+                                repo.id || ""
+                            );
+
+
+                        option.dataset.defaultBranch =
+                            repo.defaultBranch ||
+                            "main";
+
+
+                        repositorySelect.appendChild(
+                            option
+                        );
+                    }
+                );
+
+
+                // ------------------------------------------
+                // GET SAVED REPOSITORY
+                // ------------------------------------------
+
+                const saved =
+                    await chrome.storage.local.get([
+                        "githubRepository",
+                        "githubRepositoryId",
+                        "githubRepositoryBranch"
+                    ]);
+
+
+                let selectedOption =
+                    null;
+
+
+                // ------------------------------------------
+                // CASE 1:
+                // SAVED REPOSITORY EXISTS
+                // ------------------------------------------
+
+                if (
+                    saved.githubRepository
+                ) {
+
+                    selectedOption =
+                        Array.from(
+                            repositorySelect.options
+                        ).find(
+                            option =>
+                                option.value ===
+                                saved.githubRepository
+                        );
+
+
+                    if (selectedOption) {
+
+                        repositorySelect.value =
+                            saved.githubRepository;
+
+
+                        /*
+                         * Normalize repository ID and branch
+                         * if older storage didn't contain them.
+                         */
+                        const repositoryId =
+                            selectedOption.dataset.repositoryId ||
+                            saved.githubRepositoryId ||
+                            "";
+
+
+                        const defaultBranch =
+                            selectedOption.dataset.defaultBranch ||
+                            saved.githubRepositoryBranch ||
+                            "main";
+
+
+                        if (
+                            repositoryId !==
+                                saved.githubRepositoryId ||
+                            defaultBranch !==
+                                saved.githubRepositoryBranch
+                        ) {
+
+                            await chrome.storage.local.set({
+
+                                githubRepository:
+                                    selectedOption.value,
+
+                                githubRepositoryId:
+                                    repositoryId,
+
+                                githubRepositoryBranch:
+                                    defaultBranch
+                            });
+                        }
+
+                    } else {
+
+                        /*
+                         * Saved repository no longer exists.
+                         */
+                        await chrome.storage.local.remove([
+                            "githubRepository",
+                            "githubRepositoryId",
+                            "githubRepositoryBranch"
+                        ]);
+                    }
+                }
+
+
+                // ------------------------------------------
+                // CASE 2:
+                // ONLY ONE REPOSITORY
+                // ------------------------------------------
+
+                if (
+                    !selectedOption &&
+                    repositories.length === 1
+                ) {
+
+                    selectedOption =
+                        Array.from(
+                            repositorySelect.options
+                        ).find(
+                            option =>
+                                option.value ===
+                                repositories[0].fullName
+                        );
+
+
+                    if (selectedOption) {
+
+                        repositorySelect.value =
+                            selectedOption.value;
+
+
+                        /*
+                         * IMPORTANT:
+                         * The old version only visually selected
+                         * the first repository.
+                         *
+                         * This explicitly saves it.
+                         */
+                        await saveRepository(
+                            selectedOption
+                        );
+                    }
+                }
+
+
+                // ------------------------------------------
+                // CASE 3:
+                // MULTIPLE REPOSITORIES
+                // ------------------------------------------
+
+                if (
+                    !selectedOption &&
+                    repositories.length > 1
+                ) {
+
+                    repositorySelect.value =
+                        "";
+
+                    /*
+                     * Do NOT automatically choose a random
+                     * repository when several exist.
+                     *
+                     * User must choose.
+                     */
+                }
+
+
+                await updateRepositoryDisplay();
+
+
+            } catch (error) {
+
+                console.error(
+                    "PushHub: Repository loading error:",
+                    error
+                );
+
+
+                repositorySelect.innerHTML = `
+                    <option value="">
+                        Failed to load repositories
+                    </option>
+                `;
+
+
+                throw error;
+            }
+        }
+
+
+        // ==================================================
+        // LOAD GITHUB STATUS
+        // ==================================================
+
         async function loadGitHubStatus() {
 
             try {
 
-                const result =
-                    await chrome.storage.local.get([
-                        "githubAuthenticated",
-                        "githubUsername",
-                        "githubRepository"
-                    ]);
+                /*
+                 * Do NOT trust only:
+                 *
+                 * githubAuthenticated === true
+                 *
+                 * because an old/expired token can still have
+                 * that value in storage.
+                 *
+                 * Ask background.js to validate GitHub.
+                 */
+                const response =
+                    await chrome.runtime.sendMessage({
+
+                        type:
+                            "CHECK_GITHUB_STATUS"
+                    });
 
 
                 if (
-                    result.githubAuthenticated &&
-                    result.githubUsername
+                    response &&
+                    response.success &&
+                    response.authenticated
                 ) {
 
-                    statusElement.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span class="status-text">
-                            Connected
-                        </span>
-                    `;
-
-
-                    statusElement.classList.remove(
-                        "disconnected"
+                    setConnectedUI(
+                        response.username
                     );
 
 
-                    statusElement.classList.add(
-                        "connected"
-                    );
-
-
-                    connectButton.textContent =
-                        "GitHub Connected";
-
-
-                    connectButton.disabled =
-                        true;
+                    /*
+                     * Background status check updates the username.
+                     * Now load repositories using the valid token.
+                     */
+                    await loadRepositories();
 
 
                     await updateRepositoryDisplay();
 
 
-                    await loadRepositories();
-
-
-                } else {
-
-                    statusElement.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span class="status-text">
-                            Not connected
-                        </span>
-                    `;
-
-
-                    statusElement.classList.remove(
-                        "connected"
-                    );
-
-
-                    statusElement.classList.add(
-                        "disconnected"
-                    );
-
-
-                    connectButton.textContent =
-                        "Connect GitHub";
-
-
-                    connectButton.disabled =
-                        false;
-
-
-                    repositorySelect.innerHTML = `
-                        <option value="">
-                            Connect GitHub first
-                        </option>
-                    `;
-
-
-                    if (repositoryDisplay) {
-
-                        repositoryDisplay.textContent =
-                            "GitHub / DSA";
-                    }
+                    return true;
                 }
+
+
+                setDisconnectedUI();
+
+
+                return false;
+
 
             } catch (error) {
 
@@ -434,181 +756,165 @@ document.addEventListener(
                     "PushHub: GitHub status error:",
                     error
                 );
+
+
+                setDisconnectedUI();
+
+
+                return false;
             }
         }
 
 
-        connectButton.addEventListener(
-            "click",
-            async () => {
+        // ==================================================
+        // CONNECT GITHUB
+        // ==================================================
 
-                try {
+        if (connectButton) {
 
-                    connectButton.disabled =
-                        true;
+            connectButton.addEventListener(
+                "click",
+                async () => {
 
+                    try {
 
-                    connectButton.textContent =
-                        "Connecting...";
-
-
-                    statusElement.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span class="status-text">
-                            Connecting...
-                        </span>
-                    `;
+                        connectButton.disabled =
+                            true;
 
 
-                    const response =
-                        await chrome.runtime.sendMessage({
-
-                            type:
-                                "CONNECT_GITHUB"
-                        });
+                        connectButton.textContent =
+                            "Connecting...";
 
 
-                    if (
-                        !response ||
-                        !response.success
-                    ) {
+                        if (statusElement) {
 
-                        throw new Error(
-                            response?.message ||
-                            "GitHub connection failed."
+                            statusElement.innerHTML = `
+                                <span class="status-dot"></span>
+                                <span class="status-text">
+                                    Connecting...
+                                </span>
+                            `;
+                        }
+
+
+                        const response =
+                            await chrome.runtime.sendMessage({
+
+                                type:
+                                    "CONNECT_GITHUB"
+                            });
+
+
+                        if (
+                            !response ||
+                            !response.success
+                        ) {
+
+                            throw new Error(
+                                response?.message ||
+                                "GitHub connection failed."
+                            );
+                        }
+
+
+                        setConnectedUI(
+                            response.username
+                        );
+
+
+                        /*
+                         * Load repositories immediately after
+                         * successful authentication.
+                         */
+                        await loadRepositories();
+
+
+                        await updateRepositoryDisplay();
+
+
+                        await loadStats();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "PushHub: GitHub connection error:",
+                            error
+                        );
+
+
+                        setDisconnectedUI();
+
+
+                        alert(
+                            "GitHub connection failed.\n\n" +
+                            error.message
                         );
                     }
-
-
-                    statusElement.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span class="status-text">
-                            Connected
-                        </span>
-                    `;
-
-
-                    statusElement.classList.remove(
-                        "disconnected"
-                    );
-
-
-                    statusElement.classList.add(
-                        "connected"
-                    );
-
-
-                    connectButton.textContent =
-                        "GitHub Connected";
-
-
-                    connectButton.disabled =
-                        true;
-
-
-                    await loadRepositories();
-
-
-                    await updateRepositoryDisplay();
-
-
-                    await loadStats();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "PushHub: GitHub connection error:",
-                        error
-                    );
-
-
-                    statusElement.innerHTML = `
-                        <span class="status-dot"></span>
-                        <span class="status-text">
-                            Not connected
-                        </span>
-                    `;
-
-
-                    statusElement.classList.remove(
-                        "connected"
-                    );
-
-
-                    statusElement.classList.add(
-                        "disconnected"
-                    );
-
-
-                    connectButton.disabled =
-                        false;
-
-
-                    connectButton.textContent =
-                        "Connect GitHub";
-
-
-                    alert(
-                        "GitHub connection failed.\n\n" +
-                        error.message
-                    );
                 }
-            }
-        );
+            );
+        }
 
 
-        repositorySelect.addEventListener(
-            "change",
-            async () => {
+        // ==================================================
+        // REPOSITORY CHANGE
+        // ==================================================
 
-                const selectedOption =
-                    repositorySelect.options[
-                        repositorySelect.selectedIndex
-                    ];
+        if (repositorySelect) {
+
+            repositorySelect.addEventListener(
+                "change",
+                async () => {
+
+                    try {
+
+                        const selectedOption =
+                            repositorySelect.options[
+                                repositorySelect.selectedIndex
+                            ];
 
 
-                if (
-                    !selectedOption ||
-                    !selectedOption.value
-                ) {
+                        if (
+                            !selectedOption ||
+                            !selectedOption.value
+                        ) {
 
-                    return;
+                            return;
+                        }
+
+
+                        await saveRepository(
+                            selectedOption
+                        );
+
+
+                        await updateRepositoryDisplay();
+
+
+                        await loadStats();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "PushHub: Repository selection error:",
+                            error
+                        );
+
+
+                        alert(
+                            "Could not save repository.\n\n" +
+                            error.message
+                        );
+                    }
                 }
+            );
+        }
 
 
-                const repository =
-                    selectedOption.value;
-
-
-                const repositoryId =
-                    selectedOption.dataset.repositoryId;
-
-
-                const defaultBranch =
-                    selectedOption.dataset.defaultBranch;
-
-
-                await chrome.storage.local.set({
-
-                    githubRepository:
-                        repository,
-
-                    githubRepositoryId:
-                        repositoryId,
-
-                    githubRepositoryBranch:
-                        defaultBranch
-                });
-
-
-                await updateRepositoryDisplay();
-
-
-                await loadStats();
-            }
-        );
-
+        // ==================================================
+        // LOAD STATS
+        // ==================================================
 
         async function loadStats() {
 
@@ -657,50 +963,78 @@ document.addEventListener(
                     response.stats || {};
 
 
-                totalSolved.textContent =
-                    Number(
-                        stats.total ||
-                        0
-                    );
+                if (totalSolved) {
+
+                    totalSolved.textContent =
+                        Number(
+                            stats.total ||
+                            0
+                        );
+                }
 
 
                 const platforms =
                     stats.platforms || {};
 
 
-                platformCounters.leetcode.textContent =
-                    Number(
-                        platforms.leetcode ||
-                        0
-                    );
+                if (
+                    platformCounters.leetcode
+                ) {
+
+                    platformCounters.leetcode.textContent =
+                        Number(
+                            platforms.leetcode ||
+                            0
+                        );
+                }
 
 
-                platformCounters.gfg.textContent =
-                    Number(
-                        platforms.gfg ||
-                        0
-                    );
+                if (
+                    platformCounters.gfg
+                ) {
+
+                    platformCounters.gfg.textContent =
+                        Number(
+                            platforms.gfg ||
+                            0
+                        );
+                }
 
 
-                platformCounters.hackerrank.textContent =
-                    Number(
-                        platforms.hackerrank ||
-                        0
-                    );
+                if (
+                    platformCounters.hackerrank
+                ) {
+
+                    platformCounters.hackerrank.textContent =
+                        Number(
+                            platforms.hackerrank ||
+                            0
+                        );
+                }
 
 
-                platformCounters.codechef.textContent =
-                    Number(
-                        platforms.codechef ||
-                        0
-                    );
+                if (
+                    platformCounters.codechef
+                ) {
+
+                    platformCounters.codechef.textContent =
+                        Number(
+                            platforms.codechef ||
+                            0
+                        );
+                }
 
 
-                platformCounters.codeforces.textContent =
-                    Number(
-                        platforms.codeforces ||
-                        0
-                    );
+                if (
+                    platformCounters.codeforces
+                ) {
+
+                    platformCounters.codeforces.textContent =
+                        Number(
+                            platforms.codeforces ||
+                            0
+                        );
+                }
 
 
                 const current =
@@ -709,6 +1043,7 @@ document.addEventListener(
                         0
                     );
 
+
                 const best =
                     Number(
                         stats.bestStreak ||
@@ -716,12 +1051,26 @@ document.addEventListener(
                     );
 
 
-                currentStreak.textContent =
-                    `${current} ${current === 1 ? "day" : "days"}`;
+                if (currentStreak) {
+
+                    currentStreak.textContent =
+                        `${current} ${
+                            current === 1
+                                ? "day"
+                                : "days"
+                        }`;
+                }
 
 
-                bestStreak.textContent =
-                    `${best} ${best === 1 ? "day" : "days"}`;
+                if (bestStreak) {
+
+                    bestStreak.textContent =
+                        `${best} ${
+                            best === 1
+                                ? "day"
+                                : "days"
+                        }`;
+                }
 
 
             } catch (error) {
@@ -758,9 +1107,9 @@ document.addEventListener(
         }
 
 
-        /* =========================================
-           AUTOMATIC STATS REFRESH AFTER SYNC
-        ========================================= */
+        // ==================================================
+        // AUTOMATIC STATS REFRESH AFTER SYNC
+        // ==================================================
 
         chrome.runtime.onMessage.addListener(
             message => {
@@ -776,16 +1125,27 @@ document.addEventListener(
         );
 
 
-        refreshButton.addEventListener(
-            "click",
-            async () => {
+        // ==================================================
+        // MANUAL STATS REFRESH
+        // ==================================================
 
-                await loadStats();
+        if (refreshButton) {
 
-                await updateRepositoryDisplay();
-            }
-        );
+            refreshButton.addEventListener(
+                "click",
+                async () => {
 
+                    await loadStats();
+
+                    await updateRepositoryDisplay();
+                }
+            );
+        }
+
+
+        // ==================================================
+        // SOCIAL LINKS
+        // ==================================================
 
         document
             .querySelectorAll(
@@ -805,9 +1165,7 @@ document.addEventListener(
                                 link.href;
 
 
-                            if (
-                                url
-                            ) {
+                            if (url) {
 
                                 chrome.tabs.create({
                                     url
@@ -818,6 +1176,10 @@ document.addEventListener(
                 }
             );
 
+
+        // ==================================================
+        // FEEDBACK LINKS
+        // ==================================================
 
         document
             .querySelectorAll(
@@ -844,13 +1206,39 @@ document.addEventListener(
             );
 
 
+        // ==================================================
+        // INITIAL STATE
+        // ==================================================
+
         resetStatsDisplay();
 
 
-        await loadGitHubStatus();
+        /*
+         * First validate GitHub.
+         *
+         * loadGitHubStatus() will:
+         *
+         * 1. validate token
+         * 2. refresh token if needed
+         * 3. load repositories
+         * 4. automatically save the only repository
+         */
+        const connected =
+            await loadGitHubStatus();
 
 
-        await loadStats();
+        /*
+         * Only request statistics when GitHub is actually
+         * connected.
+         */
+        if (connected) {
+
+            await loadStats();
+
+        } else {
+
+            resetStatsDisplay();
+        }
 
     }
 );
