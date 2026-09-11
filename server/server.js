@@ -143,6 +143,83 @@ app.post("/auth/github/token", async (req, res) => {
 });
 
 
+// --------------------------------------------------
+// Refresh an expiring GitHub OAuth access token
+// --------------------------------------------------
+
+app.post("/auth/github/refresh", async (req, res) => {
+
+    try {
+
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing GitHub refresh token."
+            });
+        }
+
+        const githubResponse = await fetch(
+            "https://github.com/login/oauth/access_token",
+            {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    client_id: GITHUB_CLIENT_ID,
+                    client_secret: GITHUB_CLIENT_SECRET,
+                    grant_type: "refresh_token",
+                    refresh_token: refreshToken
+                })
+            }
+        );
+
+        const data = await githubResponse.json();
+
+        if (!githubResponse.ok || data.error || !data.access_token) {
+
+            console.error(
+                "GitHub OAuth refresh error:",
+                data
+            );
+
+            return res.status(400).json({
+                success: false,
+                message:
+                    data.error_description ||
+                    "GitHub token refresh failed. Please reconnect GitHub."
+            });
+        }
+
+        return res.json({
+            success: true,
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token || null,
+            expiresIn: data.expires_in || null,
+            refreshTokenExpiresIn:
+                data.refresh_token_expires_in || null,
+            scope: data.scope || null
+        });
+
+    } catch (error) {
+
+        console.error(
+            "GitHub refresh server error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error during GitHub token refresh."
+        });
+    }
+
+});
+
+
 app.listen(PORT, "0.0.0.0", () => {
 
     console.log(
