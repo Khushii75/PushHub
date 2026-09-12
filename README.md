@@ -306,9 +306,10 @@ Click the extension icon, connect your GitHub account, and select your destinati
 
 ### 📸 Screenshots & Showcase
 
-<p align="center">
-  <img src="assets/image.png" alt="PushHub Extension Preview" width="380">
-</p>
+![PushHub Dashboard - Top](./screenshots/dashboard-top.png)
+
+![PushHub Dashboard - Bottom](./screenshots/dashboard-bottom.png)
+
 
 ### 🔒 Privacy & Security
 
