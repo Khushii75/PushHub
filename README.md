@@ -41,12 +41,14 @@ Instead of manually:
 ### The Workflow:
 ```text
 Solve Problem  ──►  Get Accepted  ──►  Sync with One Click  ──►  Structured GitHub Repo
+```
 🎯 Why PushHub?
 Competitive programmers often solve problems across LeetCode, GeeksforGeeks, CodeChef, Codeforces, and HackerRank. However, keeping a clean, showcase-ready GitHub repository usually turns into a chore that interrupts your problem-solving flow.
 
 PushHub bridges that gap.
 
 The Manual Grind vs. PushHub
+```text
 Without PushHub                         With PushHub
 ───────────────                         ────────────
 Solve Problem                           Solve Problem
@@ -68,6 +70,7 @@ Rename File
 Add Problem Link
       ↓
 Repeat hundreds of times...
+```
 
 The goal is simple: Spend more time mastering algorithms, and zero time managing files.
 
@@ -113,10 +116,12 @@ Fallback: Other/ (ensures zero misplaced solutions when category tags are ambigu
 📄 Standardized Problem Layout
 Every synced problem receives its own dedicated directory with clean file naming and auto-generated documentation:
 
+```text
 Topic/
 └── ProblemIdentifier-ProblemName/
     ├── ProblemIdentifier-ProblemName.ext-(platform)
     └── README.md
+```
 
 📊 DSA Progress Dashboard & Streak Tracking
 PushHub includes an integrated overview dashboard built right into the extension popup.
@@ -127,19 +132,16 @@ Platform Breakdown: LeetCode, GeeksforGeeks, HackerRank, CodeChef, Codeforces
 Current Solving Streak: Consecutive days actively solving problems
 Best Solving Streak: Longest recorded active solving streak
 
-## 📊 PushHub Dashboard
+### 📊 PushHub Dashboard
 
-<p align="center">
-  <img src="screenshots/dashboard-top.png" width="300" alt="PushHub Metrics" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="screenshots/dashboard-bottom.png" width="300" alt="PushHub Controls" />
-</p>
+<p align="center"><img src="screenshots/dashboard-top.png" width="300" alt="PushHub Dashboard - Top"><br><img src="screenshots/dashboard-bottom.png" width="300" alt="PushHub Dashboard - Bottom"></p>
 Don't just solve more. Solve consistently.
 
 🔗 GitHub Integration & Security
 PushHub connects directly via GitHub OAuth, following secure authorization best practices.
 
 Authorization Workflow:
+```text
 ┌───────────────┐
 │    PushHub    │
 └───────┬───────┘
@@ -164,7 +166,7 @@ Authorization Workflow:
 ┌───────────────┐
 │ Sync Solution │
 └───────────────┘
-
+```
 Architecture Separation:
 PushHub keeps the extension engine distinct from your personal DSA portfolio:
 
@@ -172,6 +174,7 @@ PushHub Project Repository: Contains the Chrome extension code, Node.js backend,
 
 Your Personal DSA Repository: The destination repository where your solutions, markdown notes, and topic directories live.
 
+```text
 🧩 How PushHub Works
 ┌─────────────────────────────────────────────────────────┐
 │               Coding & Contest Platforms                │
@@ -205,9 +208,9 @@ Your Personal DSA Repository: The destination repository where your solutions, m
                   │   Organized GitHub  │
                   │    DSA Repository   │
                   └─────────────────────┘
-
-🏗️ Project Architecture
-
+```
+### 🏗️ Project Architecture
+```text
 PushHub/
 │
 ├── assets/
@@ -254,8 +257,8 @@ PushHub/
 ├── background.js
 ├── manifest.json
 └── README.md
-
-🛠️ Technology Stack
+```
+### 🛠️ Technology Stack
 Extension Framework: Chrome Extension API (Manifest V3)
 
 Frontend / Popup: JavaScript (ES6+), HTML5, CSS3
@@ -268,7 +271,7 @@ APIs & Storage: GitHub REST API, Chrome Storage API
 
 Scraping & Injection: Content Scripts, DOM Mutation Observers, Platform Bridge Injectors
 
-🚀 Installation & Setup
+### 🚀 Installation & Setup
 
 Prerequisites
 Node.js (v16 or higher)
@@ -297,18 +300,16 @@ npm start
 
 3. Load the Extension into Chrome
 
-Open Chrome and navigate to chrome://extensions/.
-Toggle on Developer mode in the top right corner.
-Click Load unpacked in the top left corner.
-Select the root PushHub folder.
-Pin PushHub to your browser toolbar.
-Click the extension icon, connect your GitHub account, and select your destination DSA repository.
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Toggle on **Developer mode** in the top right corner.
+3. Click **Load unpacked** in the top left corner.
+4. Select the root `PushHub` folder.
+5. Pin PushHub to your browser toolbar.
+6. Click the extension icon, connect your GitHub account, and select your destination DSA repository.
 
 ### 📸 Screenshots & Showcase
 
-![PushHub Dashboard - Top](./screenshots/dashboard-top.png)
-
-![PushHub Dashboard - Bottom](./screenshots/dashboard-bottom.png)
+<img width="510" height="801" alt="WhatsApp Image 2026-09-08 at 2 38 23 PM" src="https://github.com/user-attachments/assets/2434ec6d-304d-4f6b-8cbe-18b7ae3bebf0" />
 
 
 ### 🔒 Privacy & Security
@@ -317,7 +318,7 @@ Click the extension icon, connect your GitHub account, and select your destinati
 > Environment Isolation: The OAuth client secret remains securely on the backend server and is never committed to version control.
 > Minimal Scopes: Requests only the permissions necessary to manage files in your authorized repository.
 
-🔮 Future Roadmap
+### 🔮 Future Roadmap
 
 [ ] Chrome Web Store official publication
 [ ] Support for Codeforces Gym and AtCoder
@@ -326,7 +327,7 @@ Click the extension icon, connect your GitHub account, and select your destinati
 [ ] In-depth analytics: problem difficulty distributions (Easy, Medium, Hard)
 [ ] Automated daily streak reminders and browser notifications
 
-🤝 Contributing
+### 🤝 Contributing
 
 Contributions are always welcome! If you have suggestions or improvements:
 
@@ -336,7 +337,8 @@ Commit your Changes (git commit -m 'Add some AmazingFeature')
 Push to the Branch (git push origin feature/AmazingFeature)
 Open a Pull Request
 
-👩‍💻 Author
+### 👩‍💻 Author
+
 Khushi Kunwar
 kunwarkhushi75@gmail.com
 
