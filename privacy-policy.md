@@ -167,7 +167,9 @@ Users are encouraged to review this policy periodically.
 ## 10. Contact
 
 Khushi Kunwar
+
 Email: kunwarkhushi75@gmail.com
+
 Linkedin: https://www.linkedin.com/in/khushi-kumari-7718672a5
 
 For privacy questions, concerns, or support requests, please use the support contact provided on the PushHub listing in the Microsoft Edge Add-ons store.
